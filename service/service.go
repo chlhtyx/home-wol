@@ -21,17 +21,17 @@ func Wol(c echo.Context) error {
 	fmt.Printf("mac:%s\n", mac)
 	fmt.Printf("auth_code:%s\n", authCode)
 	fmt.Printf("secret:%s\n", common.Secret)
-	/*
-		auth := common.NewGoogleAuth()
 
-		code, err := auth.GetCode(common.Secret)
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-		if authCode != code  {
-			return c.String(http.StatusInternalServerError, "验证失败")
-		}
-	*/
+	auth := common.NewGoogleAuth()
+
+	code, err := auth.GetCode(common.Secret)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	if authCode != code {
+		return c.String(http.StatusInternalServerError, "验证失败")
+	}
+
 	if mac == "" {
 		return c.String(http.StatusInternalServerError, "mac为空")
 	}
