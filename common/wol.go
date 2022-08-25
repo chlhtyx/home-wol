@@ -1,6 +1,7 @@
 package common
 
 import (
+	"encoding/hex"
 	"fmt"
 	"log"
 	"net"
@@ -17,7 +18,7 @@ func SendWol(ip net.IP, port int, context []byte) {
 		return
 	}
 	defer socket.Close()
-	log.Println("send:", string(context))
+	log.Println("ip:", ip, "port:", port, ";send:", hex.EncodeToString(context))
 	_, err = socket.Write(context) // 发送数据
 	if err != nil {
 		log.Println("发送数据失败，err: ", err)

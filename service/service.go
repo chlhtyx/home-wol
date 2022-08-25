@@ -21,16 +21,17 @@ func Wol(c echo.Context) error {
 	fmt.Printf("mac:%s\n", mac)
 	fmt.Printf("auth_code:%s\n", authCode)
 	fmt.Printf("secret:%s\n", common.Secret)
+	/*
+		auth := common.NewGoogleAuth()
 
-	auth := common.NewGoogleAuth()
-	code, err := auth.GetCode(common.Secret)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	if authCode != code {
-		return c.String(http.StatusInternalServerError, "验证失败")
-	}
-
+		code, err := auth.GetCode(common.Secret)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		if authCode != code  {
+			return c.String(http.StatusInternalServerError, "验证失败")
+		}
+	*/
 	if mac == "" {
 		return c.String(http.StatusInternalServerError, "mac为空")
 	}
@@ -49,19 +50,10 @@ func Wol(c echo.Context) error {
 		data = fmt.Sprintf("%s%s", data, strings.ToUpper(mac))
 	}
 
-	byte_data := []byte(data)
-
-	// 将 byte 装换为 16进制的字符串
-	hex_string_data := hex.EncodeToString(byte_data)
-	// byte 转 16进制 的结果
-	println(hex_string_data)
-
-	/* ====== 分割线 ====== */
-
 	// 将 16进制的字符串 转换 byte
-	hex_data, _ := hex.DecodeString(hex_string_data)
+	hex_data, _ := hex.DecodeString(data)
 
-	go common.SendWol(net.IPv4(192, 168, 2, 255), 7, hex_data)
+	go common.SendWol(net.IPv4(192, 168, 2, 255), 9, hex_data)
 
 	return c.String(http.StatusOK, "指令发送成功")
 }
