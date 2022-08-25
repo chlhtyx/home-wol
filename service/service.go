@@ -51,9 +51,9 @@ func Wol(c echo.Context) error {
 	}
 
 	// 将 16进制的字符串 转换 byte
-	hex_data, _ := hex.DecodeString(data)
+	hexData, _ := hex.DecodeString(data)
 
-	go common.SendWol(net.IPv4(192, 168, 2, 255), 9, hex_data)
+	go common.SendWol(net.IPv4(192, 168, 2, 255), 9, hexData)
 
 	return c.String(http.StatusOK, "指令发送成功")
 }

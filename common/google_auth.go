@@ -80,8 +80,8 @@ func (ga *GoogleAuth) GetCode(secret string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	time := time.Now().Unix() / 30
-	b := ga.toBytes(time)
+	dt := time.Now().Unix() / 30
+	b := ga.toBytes(dt)
 	number := ga.oneTimePassword(secretKey, b)
 	return fmt.Sprintf("%06d", number), nil
 }
