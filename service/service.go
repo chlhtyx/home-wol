@@ -14,11 +14,8 @@ func Wol(c echo.Context) error {
 	mac := c.QueryParam("mac")
 	authCode := c.QueryParam("auth_code")
 
-	if mac == "" {
-		return c.String(http.StatusInternalServerError, "mac为空")
-	}
 	if authCode == "" {
-		return c.String(http.StatusInternalServerError, "auth_code为空")
+		return c.String(http.StatusInternalServerError, "验证失败")
 	}
 
 	fmt.Printf("mac:%s\n", mac)
@@ -32,6 +29,10 @@ func Wol(c echo.Context) error {
 	}
 	if authCode != code {
 		return c.String(http.StatusInternalServerError, "验证失败")
+	}
+
+	if mac == "" {
+		return c.String(http.StatusInternalServerError, "mac为空")
 	}
 
 	//处理mac地址
