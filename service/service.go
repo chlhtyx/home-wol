@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo"
 	"home-wol/common"
+	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -18,9 +19,9 @@ func Wol(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "验证失败")
 	}
 
-	fmt.Printf("mac:%s\n", mac)
-	fmt.Printf("auth_code:%s\n", authCode)
-	fmt.Printf("secret:%s\n", common.Secret)
+	log.Println("mac:", mac)
+	log.Println("auth_code:", authCode)
+	log.Println("secret:", common.Secret)
 
 	auth := common.NewGoogleAuth()
 
