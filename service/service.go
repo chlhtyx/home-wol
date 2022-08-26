@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+var BroadcastIP net.IP
+
 func Wol(c echo.Context) error {
 	mac := c.QueryParam("mac")
 	authCode := c.QueryParam("auth_code")
@@ -64,7 +66,7 @@ func Wol(c echo.Context) error {
 	// 将 16进制的字符串 转换 byte
 	hexData, _ := hex.DecodeString(data)
 
-	go common.SendWol(net.IPv4(192, 168, 2, 255), 9, hexData)
+	go common.SendWol(BroadcastIP, 9, hexData)
 
 	return c.String(http.StatusOK, "指令发送成功")
 }
