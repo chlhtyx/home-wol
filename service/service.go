@@ -32,6 +32,7 @@ func Wol(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	if authCode != code {
+		log.Println("验证失败:")
 		return c.String(http.StatusInternalServerError, "验证失败")
 	}
 
@@ -67,7 +68,7 @@ func Wol(c echo.Context) error {
 	hexData, _ := hex.DecodeString(data)
 
 	go common.SendWol(BroadcastIP, 9, hexData)
-
+	log.Println("指令发送成功:")
 	return c.String(http.StatusOK, "指令发送成功")
 }
 
