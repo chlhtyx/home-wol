@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"home-wol/common"
 	"log"
 	"net"
@@ -16,6 +16,7 @@ var BroadcastIP net.IP
 func Wol(c echo.Context) error {
 	mac := c.QueryParam("mac")
 	authCode := c.QueryParam("auth_code")
+	//userName := c.QueryParam("user_name")
 
 	if authCode == "" {
 		return c.String(http.StatusInternalServerError, "验证失败")
