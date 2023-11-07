@@ -25,8 +25,8 @@ func main() {
 		os.Exit(-1)
 	}
 
-	log.Println(para_str)
-	log.Println(tempMap["c"])
+	//log.Println(para_str)
+	//log.Println(tempMap["c"])
 
 	//检查广播地址
 	log.Println(common.Secret)
