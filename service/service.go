@@ -73,6 +73,11 @@ func Wol(c echo.Context) error {
 	return c.String(http.StatusOK, "指令发送成功")
 }
 
+func Wol2(c echo.Context) error {
+
+	return c.String(http.StatusOK, "指令发送成功")
+}
+
 func ArrayIndex(v string, a []string) int {
 	for ai, av := range a {
 		if v == av {

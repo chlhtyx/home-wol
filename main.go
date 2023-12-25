@@ -44,6 +44,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	e.GET("/wol", service.Wol)
+	e.POST("/wolv2", service.Wol)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
