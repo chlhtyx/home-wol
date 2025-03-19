@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"home-wol/common"
 	"home-wol/service"
 	"log"
@@ -16,14 +15,14 @@ import (
 func main() {
 	common.Secret = os.Getenv("SECRET")
 	broadcastAddress := os.Getenv("BROADCAST_ADDRESS")
-	para_str := os.Getenv("PARAM")
-	var tempMap map[string]interface{}
+	//para_str := os.Getenv("PARAM")
+	//var tempMap map[string]interface{}
 
-	err := json.Unmarshal([]byte(para_str), &tempMap)
-	if err != nil {
-		log.Fatalln("SECRET参数异常")
-		os.Exit(-1)
-	}
+	//err := json.Unmarshal([]byte(para_str), &tempMap)
+	//if err != nil {
+	//	log.Fatalln("SECRET参数异常")
+	//	os.Exit(-1)
+	//}
 
 	//log.Println(para_str)
 	//log.Println(tempMap["c"])
