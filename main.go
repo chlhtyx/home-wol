@@ -1,6 +1,11 @@
 package main
 
 import (
+	"database/sql"
+	_ "database/sql"
+	"encoding/json"
+	"fmt"
+	_ "fmt"
 	"home-wol/common"
 	"home-wol/service"
 	"log"
@@ -13,19 +18,26 @@ import (
 )
 
 func main() {
+
+	_, dberr := sql.Open("sqlite3", "/db/test.db")
+	if dberr != nil {
+		fmt.Println("打开数据库失败:", dberr)
+		return
+	}
+
 	common.Secret = os.Getenv("SECRET")
 	broadcastAddress := os.Getenv("BROADCAST_ADDRESS")
-	//para_str := os.Getenv("PARAM")
-	//var tempMap map[string]interface{}
+	para_str := os.Getenv("PARAM")
+	var tempMap map[string]interface{}
 
-	//err := json.Unmarshal([]byte(para_str), &tempMap)
-	//if err != nil {
-	//	log.Fatalln("SECRET参数异常")
-	//	os.Exit(-1)
-	//}
+	err := json.Unmarshal([]byte(para_str), &tempMap)
+	if err != nil {
+		log.Fatalln("SECRET参数异常")
+		os.Exit(-1)
+	}
 
-	//log.Println(para_str)
-	//log.Println(tempMap["c"])
+	log.Println(para_str)
+	log.Println(tempMap["c"])
 
 	//检查广播地址
 	log.Println(common.Secret)
