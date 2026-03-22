@@ -1,10 +1,7 @@
 package main
 
 import (
-	"database/sql"
 	_ "database/sql"
-	"encoding/json"
-	"fmt"
 	_ "fmt"
 	"home-wol/common"
 	"home-wol/service"
@@ -19,43 +16,59 @@ import (
 
 func main() {
 
-	_, dberr := sql.Open("sqlite3", "/db/test.db")
-	if dberr != nil {
-		fmt.Println("打开数据库失败:", dberr)
-		return
+	// 加载配置文件
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		configPath = "config.json" // 默认配置文件路径
 	}
 
+	_, err := common.GetConfig(configPath)
+	if err != nil {
+		log.Fatalf("加载配置文件失败: %v", err)
+	}
+	log.Println("配置文件加载成功")
+
+	// 初始化 API 服务
+	service.InitAPI(configPath)
+
+	// 兼容旧版本的全局 SECRET（可选）
 	common.Secret = os.Getenv("SECRET")
 	broadcastAddress := os.Getenv("BROADCAST_ADDRESS")
-	para_str := os.Getenv("PARAM")
-	var tempMap map[string]interface{}
-
-	err := json.Unmarshal([]byte(para_str), &tempMap)
-	if err != nil {
-		log.Fatalln("SECRET参数异常")
-		os.Exit(-1)
+	if broadcastAddress == "" {
+		broadcastAddress = "192.168.100.255" // 默认广播地址
 	}
 
-	log.Println(para_str)
-	log.Println(tempMap["c"])
-
-	//检查广播地址
-	log.Println(common.Secret)
-	log.Println(broadcastAddress)
-
+	// 检查广播地址
 	ip := net.ParseIP(broadcastAddress)
 	if ip == nil {
-		log.Fatalln("广播地址格式异常")
+		log.Fatalln("广播地址格式异常: ", broadcastAddress)
 		os.Exit(-1)
 	}
 	service.BroadcastIP = ip
 
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.GET("/wol", service.Wol)
-	e.POST("/wolv2", service.Wol)
+	log.Println("广播地址:", broadcastAddress)
 
+	e := echo.New()
+
+	// 静态文件服务 - Web 管理界面
+	e.Static("/admin", "static")
+	e.GET("/", func(c echo.Context) error {
+		return c.Redirect(http.StatusMovedPermanently, "/admin/")
+	})
+
+	// 兼容旧版 API
+	e.GET("/wol", service.Wol)
+	e.GET("/generate_code", service.GenerateCode)
+
+	// 新版 RESTful API
+	api := e.Group("/api")
+	api.GET("/devices", service.GetDevices)
+	api.POST("/devices", service.AddDevice)
+	api.PUT("/devices/:mac", service.UpdateDevice)
+	api.DELETE("/devices/:mac", service.DeleteDevice)
+	api.GET("/devices/:mac/code", service.GetDeviceCode)
+	api.GET("/devices/:mac/qrcode", service.GetDeviceQRCode)
+
+	log.Println("Web 管理界面: http://localhost:1323/admin/")
 	e.Logger.Fatal(e.Start(":1323"))
 }

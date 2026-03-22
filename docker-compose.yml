@@ -1,0 +1,60 @@
+services:
+  home-wol:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - GO_VERSION=1.23
+    container_name: home-wol
+    restart: unless-stopped
+    ports:
+      - "${PORT:-1323}:1323"
+    volumes:
+      # 挂载配置文件（只读，更安全）
+      - ./config.json:/home/config.json:ro
+      # 可选：挂载日志目录
+      # - ./logs:/home/logs
+    environment:
+      # 配置文件路径
+      - CONFIG_PATH=${CONFIG_PATH:-/home/config.json}
+      # 广播地址（根据你的网络环境修改）
+      - BROADCAST_ADDRESS=${BROADCAST_ADDRESS:-192.168.100.255}
+      # 时区设置
+      - TZ=${TZ:-Asia/Shanghai}
+      # Go 环境变量
+      - GIN_MODE=release
+    networks:
+      - wol-network
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:1323/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # 资源限制（可选）
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
+    # 使用 host 稡式以支持 WOL 广播（推荐，取消下面注释启用）
+    # network_mode: "host"
+    # 注意：启用 host 模式后，上面的 ports 配置将失效
+
+networks:
+  wol-network:
+    driver: bridge
+    # 可选：配置网络子网
+    # ipam:
+    #   config:
+    #     - subnet: 172.20.0.0/16

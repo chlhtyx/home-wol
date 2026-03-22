@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+    <module name="home-wol" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="BROADCAST_ADDRESS" value="192.168.100.255" />
+      <env name="PARAM" value="{&quot;chl&quot;:&quot;ABC&quot;,&quot;cg&quot;:&quot;AAA&quot;}" />
+    </envs>
+    <kind value="FILE" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

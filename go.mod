@@ -1,11 +1,10 @@
 module home-wol
 
-go 1.24
+go 1.23.0
 
 require (
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/makiuchi-d/gozxing v0.1.1
-	github.com/mattn/go-sqlite3 v1.14.27
 )
 
 require (

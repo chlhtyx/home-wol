@@ -3,12 +3,13 @@ package service
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"home-wol/common"
 	"log"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/labstack/echo/v4"
 )
 
 var BroadcastIP net.IP
@@ -19,16 +20,24 @@ func Wol(c echo.Context) error {
 	//userName := c.QueryParam("user_name")
 
 	if authCode == "" {
-		return c.String(http.StatusInternalServerError, "验证失败")
+		return c.String(http.StatusInternalServerError, "验证码不能为空")
 	}
 
 	log.Println("mac:", mac)
 	log.Println("auth_code:", authCode)
-	log.Println("secret:", common.Secret)
+
+	// 根据 MAC 地址获取对应的 secret
+	secret, err := common.GetSecretByMAC(mac)
+	if err != nil {
+		log.Println("获取secret失败:", err)
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	log.Println("secret:", secret)
 
 	auth := common.NewGoogleAuth()
 
-	code, err := auth.GetCode(common.Secret)
+	code, err := auth.GetCode(secret)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
@@ -73,9 +82,35 @@ func Wol(c echo.Context) error {
 	return c.String(http.StatusOK, "指令发送成功")
 }
 
-func Wol2(c echo.Context) error {
+// GenerateCode 生成动态校验码接口
+func GenerateCode(c echo.Context) error {
+	mac := c.QueryParam("mac")
 
-	return c.String(http.StatusOK, "指令发送成功")
+	if mac == "" {
+		return c.String(http.StatusInternalServerError, "mac不能为空")
+	}
+
+	log.Println("生成校验码请求 - mac:", mac)
+
+	// 根据 MAC 地址获取对应的 secret
+	secret, err := common.GetSecretByMAC(mac)
+	if err != nil {
+		log.Println("获取secret失败:", err)
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	auth := common.NewGoogleAuth()
+	code, err := auth.GetCode(secret)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	log.Println("生成校验码成功 - mac:", mac, "code:", code)
+	return c.JSON(http.StatusOK, map[string]string{
+		"mac":    mac,
+		"code":   code,
+		"secret": secret,
+	})
 }
 
 func auth(authCode string) error {

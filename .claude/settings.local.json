@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go mod tidy:*)",
+      "Bash(go build:*)",
+      "Bash(go test:*)",
+      "Bash(docker-compose config:*)",
+      "Bash(test:*)",
+      "Bash(docker-compose:*)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(docker exec:*)",
+      "Bash(tasklist:*)"
+    ]
+  }
+}

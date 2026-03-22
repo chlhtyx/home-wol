@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home WOL - 设备管理</title>
+    <link rel="stylesheet" href="css/style.css?v=2.0">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Home WOL 设备管理系统</h1>
+            <p class="subtitle">Wake-on-LAN 设备配置与管理</p>
+        </header>
+
+        <main>
+            <!-- 设备列表 -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>设备列表</h2>
+                    <button class="btn btn-primary" onclick="showAddModal()">
+                        <span class="icon">+</span> 添加设备
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="deviceList" class="device-list">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 添加/编辑设备模态框 -->
+    <div id="deviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">添加设备</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="deviceForm" onsubmit="handleSubmit(event)">
+                    <input type="hidden" id="originalMac" value="">
+
+                    <div class="form-group">
+                        <label for="deviceName">设备名称 <span class="required">*</span></label>
+                        <input type="text" id="deviceName" required
+                               placeholder="例如: 主机、NAS、游戏机"
+                               maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deviceMac">MAC 地址 <span class="required">*</span></label>
+                        <input type="text" id="deviceMac" required
+                               placeholder="例如: 00:11:22:33:44:55"
+                               pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$">
+                        <small class="help-text">格式: XX:XX:XX:XX:XX:XX 或 XX-XX-XX-XX-XX-XX</small>
+                    </div>
+
+                    <div class="form-group" id="secretGroup" style="display: none;">
+                        <label for="deviceSecret">密钥</label>
+                        <div class="input-group">
+                            <input type="text" id="deviceSecret">
+                            <button type="button" class="btn btn-secondary" onclick="generateSecret()">
+                                生成新密钥
+                            </button>
+                        </div>
+                        <small class="help-text" id="secretHelpText">用于生成动态验证码的密钥</small>
+                        <div id="secretWarning" style="display: none; margin-top: 8px; padding: 8px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; font-size: 0.9em; color: #856404;">
+                            ⚠️ <strong>警告：</strong>修改密钥后，需要重新在 Google Authenticator 中配置此设备，否则验证将失败！
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 二维码模态框 -->
+    <div id="qrcodeModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>设备二维码</h2>
+                <span class="close" onclick="closeQrcodeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="qrcodeContent" class="qrcode-content">
+                    <div class="loading">生成中...</div>
+                </div>
+                <div class="device-info" id="qrcodeDeviceInfo"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js?v=2.0"></script>
+</body>
+</html>

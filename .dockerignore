@@ -1,0 +1,72 @@
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# 文档
+*.md
+LICENSE
+README*
+CHANGELOG*
+*.txt
+
+# 配置文件（不打包进镜像，使用挂载）
+config.json
+config.*.json
+.env
+.env.*
+
+# 测试
+*_test.go
+test/
+tests/
+*.test
+
+# 临时文件
+*.tmp
+*.log
+*.bak
+*.old
+*.backup
+
+# 编译产物
+wol.exe
+wol
+main
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+.docker/
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+db/
+
+# 日志
+logs/
+*.log
+
+# OS 文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 构建缓存
+.cache/
+dist/
+build/

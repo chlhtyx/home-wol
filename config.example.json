@@ -1,0 +1,19 @@
+{
+  "devices": [
+    {
+      "mac": "AABBCCDDEEFF",
+      "name": "电脑1",
+      "secret": "JBSWY3DPEHPK3PXP"
+    },
+    {
+      "mac": "112233445566",
+      "name": "电脑2",
+      "secret": "KRSXG5DSNFXAWZL"
+    },
+    {
+      "mac": "001122334455",
+      "name": "服务器",
+      "secret": "MFRGG3DFMZTWQ2LK"
+    }
+  ]
+}
