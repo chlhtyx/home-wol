@@ -7,8 +7,77 @@ let currentEditingMac = null;
 
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
+    loadSettings();
     loadDevices();
 });
+
+// 加载网络设置；加载失败时禁用保存，避免误覆盖当前配置。
+async function loadSettings() {
+    const input = document.getElementById('broadcastAddress');
+    const button = document.getElementById('saveSettingsButton');
+    const status = document.getElementById('settingsStatus');
+    const retry = document.getElementById('retrySettingsButton');
+    input.disabled = true;
+    button.disabled = true;
+    retry.hidden = true;
+    status.textContent = '正在加载网络设置…';
+    status.className = 'settings-status';
+
+    try {
+        const response = await fetch(`${API_BASE}/settings`, { cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || '加载网络设置失败');
+        input.value = data.broadcast_address;
+        input.placeholder = '例如：192.168.1.255';
+        input.disabled = false;
+        button.disabled = false;
+        status.textContent = `当前生效地址：${data.broadcast_address}`;
+    } catch (error) {
+        status.textContent = `加载失败：${error.message}`;
+        status.className = 'settings-status error';
+        retry.hidden = false;
+    }
+}
+
+async function saveSettings(event) {
+    event.preventDefault();
+    const input = document.getElementById('broadcastAddress');
+    const button = document.getElementById('saveSettingsButton');
+    const status = document.getElementById('settingsStatus');
+    if (button.disabled) return;
+
+    const address = input.value.trim();
+    if (!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(address) || address.split('.').some(part => Number(part) > 255)) {
+        showToast('请输入有效的 IPv4 广播地址，例如 192.168.1.255', 'warning');
+        input.focus();
+        return;
+    }
+
+    input.disabled = true;
+    button.disabled = true;
+    button.textContent = '保存中…';
+    try {
+        const response = await fetch(`${API_BASE}/settings`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ broadcast_address: address })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || '保存网络设置失败');
+        input.value = data.broadcast_address;
+        status.textContent = `已保存，当前生效地址：${data.broadcast_address}`;
+        status.className = 'settings-status success';
+        showToast('广播地址已保存，立即生效', 'success');
+    } catch (error) {
+        status.textContent = `保存失败：${error.message}`;
+        status.className = 'settings-status error';
+        showToast(error.message, 'error');
+    } finally {
+        input.disabled = false;
+        button.disabled = false;
+        button.textContent = '保存设置';
+    }
+}
 
 // 加载设备列表
 async function loadDevices() {

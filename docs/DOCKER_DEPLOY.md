@@ -1,5 +1,9 @@
 # Docker 部署指南
 
+广播地址现通过 Web 管理页顶部的“网络设置”配置并立即生效，持久化到 `config.json` 的 `broadcast_address`。下文保留的 `BROADCAST_ADDRESS` 示例仅用于兼容旧配置，页面保存的设置优先。
+
+> 命令均从项目根目录执行；当前目录布局和启动方式见[项目 README](../README.md)。旧目录示意保留作参考。
+
 本指南提供两种部署方式：
 1. **Docker Compose**（推荐）- 适合生产环境
 2. **Docker Run** - 适合快速测试和简单部署
@@ -14,10 +18,10 @@
 
 ```bash
 # 复制配置文件模板
-cp config/config.json.template config/config.json
+cp config.example.json config.json
 
 # 编辑配置文件，添加你的设备信息
-# 编辑 config/config.json
+# 编辑 config.json
 ```
 
 ### 2. 修改 docker-compose.yml（可选）
@@ -91,7 +95,7 @@ docker-compose restart
 
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
-| CONFIG_PATH | 配置文件路径 | /home/config/config.json |
+| CONFIG_PATH | 配置文件路径 | /home/config.json |
 | BROADCAST_ADDRESS | 广播地址 | 192.168.1.255 |
 | TZ | 时区 | Asia/Shanghai |
 
@@ -155,7 +159,7 @@ docker-compose logs home-wol
 ```
 
 常见原因：
-- 配置文件不存在：确保 `config/config.json` 存在
+- 配置文件不存在：确保 `config.json` 存在
 - 配置文件格式错误：检查 JSON 格式是否正确
 - 端口冲突：修改 `docker-compose.yml` 中的端口映射
 
@@ -182,7 +186,7 @@ docker-compose restart
 docker exec -it home-wol sh
 
 # 查看配置文件
-cat /home/config/config.json
+cat /home/config.json
 
 # 退出容器
 exit
@@ -860,7 +864,7 @@ docker rm -f home-wol
 
 - [Docker Run 官方文档](https://docs.docker.com/engine/reference/commandline/run/)
 - [Docker Compose 文档](https://docs.docker.com/compose/)
-- [项目主页](../../README.md)
+- [项目主页](../README.md)
 
 # 删除配置文件（可选）
 # rm -rf config/

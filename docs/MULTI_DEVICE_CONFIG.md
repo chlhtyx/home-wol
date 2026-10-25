@@ -1,5 +1,7 @@
 # 多设备配置说明
 
+> 命令均从项目根目录执行；当前目录布局和启动方式见[项目 README](../README.md)。旧目录示意保留作参考。
+
 ## 功能概述
 
 本项目现在支持为不同的 MAC 地址配置不同的 secret 密钥，实现多设备的独立验证。
@@ -154,7 +156,7 @@ otpauth://totp/设备名称?secret=YOUR_SECRET
 ## 环境变量
 
 - `CONFIG_PATH`: 配置文件路径（默认：`config.json`）
-- `BROADCAST_ADDRESS`: 广播地址（如：`192.168.1.255`）
+- 广播地址：在 Web 页面的“网络设置”中修改，写入 `config.json` 的 `broadcast_address` 字段，保存后立即生效。`BROADCAST_ADDRESS` 环境变量仅兼容未设置此字段的旧配置。
 - `SECRET`: 全局密钥（已废弃，保留用于兼容旧版本）
 
 ## 错误处理

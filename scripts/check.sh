@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." || exit 1
+
 echo "=================================="
 echo "  Home WOL 部署检查脚本"
 echo "=================================="
@@ -27,9 +29,9 @@ echo ""
 
 # 检查 Docker Compose
 echo "🔍 检查 Docker Compose..."
-if command -v docker-compose &> /dev/null; then
+if docker compose version &> /dev/null; then
     echo -e "${GREEN}✅ Docker Compose 已安装${NC}"
-    docker-compose --version
+    docker compose version
 else
     echo -e "${RED}❌ Docker Compose 未安装${NC}"
     check_passed=false
@@ -38,11 +40,11 @@ echo ""
 
 # 检查配置文件
 echo "🔍 检查配置文件..."
-if [ -f "config/config.json" ]; then
+if [ -f "config.json" ]; then
     echo -e "${GREEN}✅ 配置文件存在${NC}"
     # 验证 JSON 格式
     if command -v jq &> /dev/null; then
-        if jq empty config/config.json 2>/dev/null; then
+        if jq empty config.json 2>/dev/null; then
             echo -e "${GREEN}✅ 配置文件格式正确${NC}"
         else
             echo -e "${RED}❌ 配置文件格式错误${NC}"
@@ -60,15 +62,13 @@ echo ""
 echo "🔍 检查环境变量文件..."
 if [ -f ".env" ]; then
     echo -e "${GREEN}✅ 环境变量文件存在${NC}"
-    if grep -q "BROADCAST_ADDRESS" .env; then
-        echo -e "${GREEN}✅ BROADCAST_ADDRESS 已配置${NC}"
-    else
-        echo -e "${YELLOW}⚠️  BROADCAST_ADDRESS 未配置${NC}"
-    fi
 else
     echo -e "${YELLOW}⚠️  环境变量文件不存在，运行 'make init' 创建${NC}"
 fi
 echo ""
+
+# 广播地址由 Web 管理页面配置，不再要求 .env 提供。
+echo "广播地址请在 Web 管理页面的网络设置中查看和修改。"
 
 # 检查端口占用
 echo "🔍 检查端口占用..."
@@ -87,7 +87,7 @@ if docker ps --format '{{.Names}}' | grep -q "home-wol"; then
     docker ps --filter "name=home-wol" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 else
     echo -e "${YELLOW}⚠️  容器未运行${NC}"
-    echo "运行 'docker-compose up -d' 启动服务"
+    echo "运行 'docker compose up -d' 启动服务"
 fi
 echo ""
 
@@ -110,7 +110,7 @@ if [ "$check_passed" = true ]; then
     echo -e "${GREEN}✅ 所有检查通过！${NC}"
     echo ""
     echo "启动服务："
-    echo "  docker-compose up -d"
+    echo "  docker compose up -d"
     echo ""
     echo "或使用 Makefile："
     echo "  make up"

@@ -322,6 +322,31 @@ header h1 {
 
 .input-group input {
     flex: 1;
+    min-width: 0;
+}
+
+.btn[hidden] {
+    display: none;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.settings-status {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.settings-status.error {
+    color: var(--danger-color);
+}
+
+.settings-status.success {
+    color: #047857;
 }
 
 /* 二维码样式 */

@@ -1,5 +1,7 @@
 # Web 管理界面快速指南
 
+> 命令均从项目根目录执行；当前目录布局和启动方式见[项目 README](../README.md)。旧目录示意保留作参考。
+
 ## 功能特性
 
 ### 🎨 现代化的 Web 界面
@@ -35,7 +37,7 @@
 go run main.go
 
 # 方式 2：编译后运行
-go build -o wol.exe
+go build -o bin/wol.exe
 ./wol
 
 # 方式 3：使用 Docker
@@ -324,7 +326,7 @@ services:
     volumes:
       - ./config:/home/config
     environment:
-      - CONFIG_PATH=/home/config/config.json
+      - CONFIG_PATH=/home/config.json
 ```
 
 访问：`http://localhost:1323/admin/`

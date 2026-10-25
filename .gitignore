@@ -13,4 +13,14 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-/go.sum
+# Local outputs and runtime configuration
+/bin/
+/artifacts/
+/logs/
+/config.json
+/config.backup.json
+/.env
+
+# Local editor and agent settings
+/.idea/
+/.claude/

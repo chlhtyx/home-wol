@@ -16,7 +16,8 @@ type DeviceConfig struct {
 
 // Config 应用配置
 type Config struct {
-	Devices []DeviceConfig `json:"devices"`
+	BroadcastAddress string         `json:"broadcast_address,omitempty"`
+	Devices          []DeviceConfig `json:"devices"`
 }
 
 var (

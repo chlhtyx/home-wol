@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home WOL - 设备管理</title>
-    <link rel="stylesheet" href="css/style.css?v=2.0">
+    <link rel="stylesheet" href="css/style.css?v=2.1">
 </head>
 <body>
     <div class="container">
@@ -14,6 +14,27 @@
         </header>
 
         <main>
+            <section class="card" aria-labelledby="networkSettingsTitle">
+                <div class="card-header">
+                    <h2 id="networkSettingsTitle">网络设置</h2>
+                </div>
+                <div class="card-body">
+                    <form id="settingsForm" onsubmit="saveSettings(event)">
+                        <div class="form-group">
+                            <label for="broadcastAddress">广播地址 <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="text" id="broadcastAddress" required disabled
+                                       maxlength="15" inputmode="decimal" autocomplete="off"
+                                       placeholder="加载中…" aria-describedby="broadcastHelp settingsStatus">
+                                <button id="saveSettingsButton" type="submit" class="btn btn-primary" disabled>保存设置</button>
+                            </div>
+                            <small id="broadcastHelp" class="help-text">填写目标设备所在子网的 IPv4 广播地址，例如 192.168.1.255。保存后立即生效，无需重启。</small>
+                        </div>
+                        <p id="settingsStatus" class="settings-status" role="status" aria-live="polite">正在加载网络设置…</p>
+                        <button id="retrySettingsButton" type="button" class="btn btn-secondary" onclick="loadSettings()" hidden>重新加载</button>
+                    </form>
+                </div>
+            </section>
             <!-- 设备列表 -->
             <section class="card">
                 <div class="card-header">
@@ -99,6 +120,6 @@
     <!-- Toast 提示 -->
     <div id="toast" class="toast"></div>
 
-    <script src="js/app.js?v=2.0"></script>
+    <script src="js/app.js?v=2.1"></script>
 </body>
 </html>

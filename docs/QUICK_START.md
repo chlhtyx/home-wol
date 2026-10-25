@@ -1,5 +1,7 @@
 # 快速开始指南
 
+> 命令均从项目根目录执行；当前目录布局和启动方式见[项目 README](../README.md)。旧目录示意保留作参考。
+
 ## 功能概述
 
 本项目已升级为支持多设备独立密钥管理的 WOL (Wake-On-LAN) 服务。每个设备可以配置独立的 Google Authenticator 密钥，提供更安全的管理方式。
@@ -17,10 +19,10 @@
 
 ```bash
 # 编译主程序
-go build -o wol.exe .
+go build -o bin/wol.exe .
 
 # 编译密钥生成工具
-go build -o generate_secret.exe ./cmd/generate_secret
+go build -o bin/generate_secret.exe ./cmd/generate_secret
 ```
 
 ### 2. 生成设备密钥
@@ -28,7 +30,7 @@ go build -o generate_secret.exe ./cmd/generate_secret
 运行密钥生成工具：
 
 ```bash
-generate_secret.exe
+./bin/generate_secret.exe
 ```
 
 按提示输入设备名称（如：我的电脑），程序会生成：
@@ -69,11 +71,11 @@ generate_secret.exe
 
 ```bash
 # 使用默认配置文件路径
-wol.exe
+./bin/wol.exe
 
 # 或指定配置文件路径
 set CONFIG_PATH=/path/to/config.json
-wol.exe
+./bin/wol.exe
 ```
 
 服务默认监听端口：1323
@@ -114,7 +116,7 @@ curl -X POST "http://localhost:1323/wolv2" \
 | 变量名 | 说明 | 默认值 |
 |--------|------|--------|
 | CONFIG_PATH | 配置文件路径 | config.json |
-| BROADCAST_ADDRESS | 广播地址 | 192.168.1.255 |
+| BROADCAST_ADDRESS | 旧配置回退；广播地址优先在 Web 页面“网络设置”中保存 | 192.168.100.255 |
 | SECRET | 全局密钥（已废弃） | - |
 
 ## 配置示例
@@ -309,4 +311,4 @@ docker run -d \
 
 ## 许可证
 
-请参阅 [LICENSE](./LICENSE) 文件了解详情。
+请参阅 [LICENSE](../LICENSE) 文件了解详情。

@@ -1,5 +1,7 @@
 # 解决浏览器缓存问题
 
+> 命令均从项目根目录执行；当前目录布局和启动方式见[项目 README](../README.md)。旧目录示意保留作参考。
+
 ## 问题原因
 
 浏览器缓存了旧版本的 JavaScript 文件，导致密钥编辑功能无法使用。
@@ -90,7 +92,7 @@ taskkill /F /IM wol.exe
 
 # 重新启动
 cd D:\code\home-wol
-./wol.exe
+./bin/wol.exe
 ```
 
 ### 2. 检查文件内容

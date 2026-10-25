@@ -1,5 +1,7 @@
 # Docker Compose 部署测试报告
 
+> 历史记录：本文描述过去的实现或验证结果，不代表当前运行状态。当前操作方式见[项目 README](../../README.md)。
+
 ## 测试日期
 2026-03-22 22:47
 
@@ -285,7 +287,7 @@ Docker Compose 部署成功，所有功能正常工作：
 
 ## 相关文档
 
-- [Docker 快速部署](./README_DOCKER.md)
-- [Docker 详细部署](./DOCKER_DEPLOY.md)
-- [Web 管理界面指南](./WEB_QUICK_START.md)
-- [多设备配置说明](./MULTI_DEVICE_CONFIG.md)
+- [Docker 快速部署](../README_DOCKER.md)
+- [Docker 详细部署](../DOCKER_DEPLOY.md)
+- [Web 管理界面指南](../WEB_QUICK_START.md)
+- [多设备配置说明](../MULTI_DEVICE_CONFIG.md)

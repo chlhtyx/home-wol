@@ -1,5 +1,7 @@
 # Docker Run 命令已添加到部署文档
 
+> 历史记录：本文描述过去的实现或验证结果，不代表当前运行状态。当前操作方式见[项目 README](../../README.md)。
+
 ## ✅ 更新完成
 
 已成功在 `DOCKER_DEPLOY.md` 中添加了完整的 Docker Run 部署指南！

@@ -70,3 +70,10 @@ Desktop.ini
 .cache/
 dist/
 build/
+
+# 本地资料和工具不参与镜像构建
+docs/
+scripts/
+bin/
+artifacts/
+.claude/

@@ -6,7 +6,6 @@ import (
 	"home-wol/common"
 	"home-wol/service"
 	"log"
-	"net"
 	"net/http"
 
 	"os"
@@ -33,20 +32,11 @@ func main() {
 
 	// 兼容旧版本的全局 SECRET（可选）
 	common.Secret = os.Getenv("SECRET")
-	broadcastAddress := os.Getenv("BROADCAST_ADDRESS")
-	if broadcastAddress == "" {
-		broadcastAddress = "192.168.100.255" // 默认广播地址
+	ip, err := service.GetBroadcastIP()
+	if err != nil {
+		log.Fatalf("加载广播地址失败: %v", err)
 	}
-
-	// 检查广播地址
-	ip := net.ParseIP(broadcastAddress)
-	if ip == nil {
-		log.Fatalln("广播地址格式异常: ", broadcastAddress)
-		os.Exit(-1)
-	}
-	service.BroadcastIP = ip
-
-	log.Println("广播地址:", broadcastAddress)
+	log.Println("广播地址:", ip)
 
 	e := echo.New()
 
@@ -62,6 +52,8 @@ func main() {
 
 	// 新版 RESTful API
 	api := e.Group("/api")
+	api.GET("/settings", service.GetSettings)
+	api.PUT("/settings", service.UpdateSettings)
 	api.GET("/devices", service.GetDevices)
 	api.POST("/devices", service.AddDevice)
 	api.PUT("/devices/:mac", service.UpdateDevice)

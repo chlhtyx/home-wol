@@ -1,5 +1,7 @@
 # Docker 快速部署
 
+> 命令均从项目根目录执行；当前目录布局和启动方式见[项目 README](../README.md)。旧目录示意保留作参考。
+
 ## 前置要求
 
 - Docker
@@ -9,10 +11,10 @@
 
 ### Windows 用户
 
-双击运行 `start.bat` 脚本：
+双击运行 `scripts/start.bat` 脚本：
 
 ```batch
-start.bat
+scripts/start.bat
 ```
 
 ### Linux/Mac 用户
@@ -20,8 +22,8 @@ start.bat
 使用启动脚本：
 
 ```bash
-chmod +x start.sh
-./start.sh
+chmod +x scripts/start.sh
+./scripts/start.sh
 ```
 
 或使用 Makefile：
@@ -31,7 +33,7 @@ chmod +x start.sh
 make init
 
 # 编辑配置文件
-vim config/config.json
+vim config.json
 vim .env
 
 # 启动服务
@@ -45,7 +47,7 @@ make logs
 
 ### 1. 编辑配置文件
 
-**config/config.json** - 设备配置：
+**config.json** - 设备配置：
 
 ```json
 {
@@ -62,8 +64,7 @@ make logs
 **.env** - 环境变量：
 
 ```env
-# 广播地址（重要！）
-BROADCAST_ADDRESS=192.168.1.255
+# 广播地址请在启动后的 Web 管理页面“网络设置”中配置。
 
 # 服务端口
 PORT=1323
@@ -72,13 +73,17 @@ PORT=1323
 TZ=Asia/Shanghai
 ```
 
-### 2. 查找你的广播地址
+### 2. 配置广播地址
+
+启动后访问 <http://localhost:1323/admin/>，在“网络设置”中输入目标子网的 IPv4 广播地址并保存，下一次唤醒立即生效。配置写入 `config.json`，重启后保留。旧版 `BROADCAST_ADDRESS` 环境变量仅在文件未配置广播地址时生效。
+
+广播地址由 IP 和子网掩码共同决定；下面 `192.168.1.255` 的示例假定子网为 `192.168.1.0/24`。
 
 **Windows:**
 ```cmd
 ipconfig
 ```
-查找"默认网关"，例如 `192.168.1.1`，则广播地址为 `192.168.1.255`
+例如，设备 IP 为 `192.168.1.10`、子网掩码为 `255.255.255.0`，广播地址为 `192.168.1.255`。
 
 **Linux/Mac:**
 ```bash
@@ -160,7 +165,7 @@ curl -X POST "http://localhost:1323/wolv2" \
 
 ## 配置文件管理
 
-配置文件位于 `config/config.json`，可以直接编辑：
+配置文件位于 `config.json`，可以直接编辑：
 
 1. 编辑配置文件
 2. 重启服务：`docker-compose restart`
@@ -175,8 +180,8 @@ D:\code\home-wol\
 ├── .dockerignore           # Docker 忽略文件
 ├── .env.example            # 环境变量示例
 ├── .env                    # 环境变量（需要创建）
-├── start.sh                # Linux/Mac 启动脚本
-├── start.bat               # Windows 启动脚本
+├── scripts/start.sh                # Linux/Mac 启动脚本
+├── scripts/start.bat               # Windows 启动脚本
 ├── Makefile                # Make 命令
 ├── config/                 # 配置文件目录（挂载）
 │   ├── config.json.template  # 配置模板
@@ -193,10 +198,10 @@ D:\code\home-wol\
 docker-compose logs home-wol
 
 # 检查配置文件
-cat config/config.json
+cat config.json
 
 # 验证 JSON 格式
-cat config/config.json | jq .
+cat config.json | jq .
 ```
 
 ### 2. 无法唤醒设备

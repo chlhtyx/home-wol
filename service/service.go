@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"home-wol/common"
 	"log"
-	"net"
 	"net/http"
 	"strings"
 
 	"github.com/labstack/echo/v4"
 )
-
-var BroadcastIP net.IP
 
 func Wol(c echo.Context) error {
 	mac := c.QueryParam("mac")
@@ -77,7 +74,13 @@ func Wol(c echo.Context) error {
 	// 将 16进制的字符串 转换 byte
 	hexData, _ := hex.DecodeString(data)
 
-	go common.SendWol(BroadcastIP, 9, hexData)
+	// 每次唤醒读取最新配置，页面保存后无需重启。
+	broadcastIP, err := GetBroadcastIP()
+	if err != nil {
+		log.Println("加载广播地址失败:", err)
+		return c.String(http.StatusInternalServerError, "加载广播地址失败")
+	}
+	go common.SendWol(broadcastIP, 9, hexData)
 	log.Println("指令发送成功:")
 	return c.String(http.StatusOK, "指令发送成功")
 }

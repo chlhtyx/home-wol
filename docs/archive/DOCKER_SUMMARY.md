@@ -1,5 +1,7 @@
 # Docker 部署完成总结
 
+> 历史记录：本文描述过去的实现或验证结果，不代表当前运行状态。当前操作方式见[项目 README](../../README.md)。
+
 ## 已创建的文件
 
 ### 核心文件
@@ -216,7 +218,7 @@ docker-compose restart
 
 ## 文档链接
 
-- [Docker 快速部署](./README_DOCKER.md)
-- [Docker 详细部署](./DOCKER_DEPLOY.md)
-- [快速开始指南](./QUICK_START.md)
-- [多设备配置说明](./MULTI_DEVICE_CONFIG.md)
+- [Docker 快速部署](../README_DOCKER.md)
+- [Docker 详细部署](../DOCKER_DEPLOY.md)
+- [快速开始指南](../QUICK_START.md)
+- [多设备配置说明](../MULTI_DEVICE_CONFIG.md)

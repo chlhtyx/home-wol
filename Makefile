@@ -1,4 +1,4 @@
-.PHONY: help build up down restart logs ps test clean install-config
+.PHONY: help build up down restart logs ps test clean install-config install-env init dev rebuild shell update
 
 help: ## 显示帮助信息
 	@echo "Home WOL - Makefile 命令"
@@ -8,22 +8,22 @@ help: ## 显示帮助信息
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
 build: ## 构建 Docker 镜像
-	docker-compose build
+	docker compose build
 
 up: ## 启动服务
-	docker-compose up -d
+	docker compose up -d
 
 down: ## 停止服务
-	docker-compose down
+	docker compose down
 
 restart: ## 重启服务
-	docker-compose restart
+	docker compose restart
 
 logs: ## 查看日志（实时）
-	docker-compose logs -f
+	docker compose logs -f
 
 ps: ## 查看服务状态
-	docker-compose ps
+	docker compose ps
 
 test: ## 测试服务
 	@echo "测试生成验证码接口..."
@@ -32,13 +32,13 @@ test: ## 测试服务
 	@echo "请手动测试唤醒接口"
 
 clean: ## 清理容器和镜像
-	docker-compose down
+	docker compose down
 	docker rmi home-wol_home-wol
 
 install-config: ## 安装配置文件
-	@if [ ! -f "config/config.json" ]; then \
-		cp config/config.json.template config/config.json; \
-		echo "✅ 已创建配置文件: config/config.json"; \
+	@if [ ! -f "config.json" ]; then \
+		cp config.example.json config.json && \
+		echo "✅ 已创建配置文件: config.json"; \
 	else \
 		echo "⚠️  配置文件已存在"; \
 	fi
@@ -54,19 +54,19 @@ install-env: ## 安装环境变量文件
 init: install-config install-env ## 初始化配置
 	@echo "✅ 配置文件已准备就绪"
 	@echo "⚠️  请编辑以下文件："
-	@echo "   - config/config.json (设备配置)"
+	@echo "   - config.json (设备配置)"
 	@echo "   - .env (环境变量)"
 
 dev: ## 开发模式启动
-	docker-compose up
+	docker compose up
 
 rebuild: ## 重新构建并启动
-	docker-compose up -d --build
+	docker compose up -d --build
 
 shell: ## 进入容器 Shell
 	docker exec -it home-wol sh
 
 update: ## 更新并重启
 	git pull
-	docker-compose build
-	docker-compose up -d
+	docker compose build
+	docker compose up -d
