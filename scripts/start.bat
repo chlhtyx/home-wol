@@ -26,6 +26,7 @@ if not exist ".env" (
     copy .env.example .env >nul
     if errorlevel 1 exit /b 1
     echo ✅ 已创建环境变量文件: .env
+    echo ⚠️  请先在 .env 中设置 ADMIN_PASSWORD，管理端账号默认为 admin
     echo ⚠️  启动后请在 Web 管理页面的网络设置中配置广播地址
     echo.
     pause
@@ -55,8 +56,8 @@ echo ==================================
 echo WOL 服务: http://localhost:1323
 echo.
 echo 测试命令：
-echo   # 生成验证码
-echo   curl "http://localhost:1323/generate_code?mac=YOUR_MAC"
+echo   # 登录管理端后在设备二维码中查看验证码
+echo   http://localhost:1323/admin/
 echo.
 echo   # 唤醒设备
 echo   curl "http://localhost:1323/wol?mac=YOUR_MAC^&auth_code=YOUR_CODE"

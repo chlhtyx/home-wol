@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - Home WOL</title>
+    <link rel="stylesheet" href="/login.css">
+    <script src="/login.js" defer></script>
+</head>
+<body>
+    <main class="login-panel">
+        <p class="brand">Home WOL</p>
+        <h1>管理端登录</h1>
+        <p class="intro">登录后管理设备与局域网唤醒设置。</p>
+        <form id="loginForm">
+            <label for="username">账号</label>
+            <input id="username" name="username" type="text" autocomplete="username" required maxlength="128" autofocus>
+            <label for="password">密码</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="1024" aria-describedby="loginStatus">
+            <p id="loginStatus" role="status" aria-live="polite"></p>
+            <button id="loginButton" type="submit">登录</button>
+        </form>
+    </main>
+</body>
+</html>

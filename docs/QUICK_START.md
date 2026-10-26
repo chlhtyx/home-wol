@@ -252,34 +252,14 @@ go test -v ./common
 
 ## Docker 部署
 
-```dockerfile
-FROM golang:alpine AS builder
-WORKDIR /app
-COPY . .
-RUN go build -o wol .
-
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-WORKDIR /root/
-COPY --from=builder /app/wol .
-COPY config.json .
-EXPOSE 1323
-CMD ["./wol"]
-```
-
-构建和运行：
+使用仓库根目录的 `Dockerfile` 和 Compose 配置。构建工具链固定为 Go 1.27.3，运行镜像为 Alpine 3.24.3。准备配置文件和 `.env`，设置管理端密码后，在项目根目录构建和启动：
 
 ```bash
-# 构建镜像
-docker build -t home-wol .
-
-# 运行容器
-docker run -d \
-  -p 1323:1323 \
-  -v $(pwd)/config.json:/root/config.json \
-  -e BROADCAST_ADDRESS=192.168.1.255 \
-  home-wol
+docker compose up -d --build
+docker compose ps
 ```
+
+登录管理页面后配置广播地址；详细步骤和软路由镜像部署方式见[项目 README](../README.md)和[Docker 快速部署](README_DOCKER.md)。
 
 ## 故障排查
 

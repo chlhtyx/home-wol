@@ -361,9 +361,8 @@ func saveConfig(config *common.Config) error {
 	}
 
 	// 更新全局配置（需要重新加载以刷新缓存）
-	common.LoadConfig(configPath)
-
-	return nil
+	_, err = common.ReloadConfig(configPath)
+	return err
 }
 
 // backupConfig 备份配置文件

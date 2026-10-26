@@ -21,7 +21,6 @@ func Wol(c echo.Context) error {
 	}
 
 	log.Println("mac:", mac)
-	log.Println("auth_code:", authCode)
 
 	// 根据 MAC 地址获取对应的 secret
 	secret, err := common.GetSecretByMAC(mac)
@@ -29,9 +28,6 @@ func Wol(c echo.Context) error {
 		log.Println("获取secret失败:", err)
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-
-	log.Println("secret:", secret)
-
 	auth := common.NewGoogleAuth()
 
 	code, err := auth.GetCode(secret)
@@ -108,7 +104,7 @@ func GenerateCode(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	log.Println("生成校验码成功 - mac:", mac, "code:", code)
+	log.Println("生成校验码成功 - mac:", mac)
 	return c.JSON(http.StatusOK, map[string]string{
 		"mac":    mac,
 		"code":   code,

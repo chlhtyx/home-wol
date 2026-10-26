@@ -21,6 +21,10 @@ Home WOL 项目现在包含了一个完整的 Web 管理界面，用于方便地
 
 ## 访问方式
 
+启动前设置环境变量 `ADMIN_PASSWORD`，账号由 `ADMIN_USERNAME` 指定，默认为 `admin`；Docker Compose 从 `.env` 读取，本地运行需设置进程环境变量。没有默认密码，缺少密码时服务拒绝启动。
+
+访问 `/admin/` 会先跳转 `/login`。登录会话有效期 12 小时，页面提供“退出登录”；退出或服务重启后原会话失效，过期访问接口会自动返回登录页。
+
 页面顶部“网络设置”可查看和修改广播地址。填写目标子网的 IPv4 广播地址（例如 `192.168.1.255`），点击“保存设置”后立即用于后续唤醒请求，无需重启。设置持久化在根目录 `config.json` 的 `broadcast_address` 字段。
 
 `GET /api/settings` 读取当前生效的广播地址；`PUT /api/settings` 使用 JSON `{"broadcast_address":"192.168.1.255"}` 保存。空地址、IPv6、无效 IPv4、回环、多播和未指定地址会返回 400，保存失败会显示错误提示。旧环境变量只在配置文件未设置广播地址时作为回退。
@@ -32,6 +36,10 @@ http://localhost:1323/admin/
 ```
 
 ## API 接口
+
+以下管理接口以及旧的 `/generate_code` 均需携带登录 Cookie，未登录返回 401。先向 `POST /api/login` 发送 JSON `{"username":"admin","password":"你的密码"}`，并保存响应 Cookie；登录、退出和所有写接口必须携带 `X-Requested-With: XMLHttpRequest` 请求头（防止跨站请求）。`POST /api/logout` 使当前会话失效。
+
+`GET /wol?mac=...&auth_code=...` 继续使用设备动态验证码，无需管理端会话；`GET /healthz` 为公开健康检查。
 
 ### 获取设备列表
 ```http

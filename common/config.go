@@ -21,9 +21,10 @@ type Config struct {
 }
 
 var (
-	config     *Config
-	configOnce sync.Once
-	configErr  error
+	config           *Config
+	configOnce       sync.Once
+	configErr        error
+	configCacheMutex sync.RWMutex
 )
 
 // LoadConfig 加载配置文件
@@ -50,14 +51,33 @@ func LoadConfig(path string) (*Config, error) {
 // GetConfig 获取配置（单例）
 func GetConfig(path string) (*Config, error) {
 	configOnce.Do(func() {
-		config, configErr = LoadConfig(path)
+		cfg, err := LoadConfig(path)
+		configCacheMutex.Lock()
+		defer configCacheMutex.Unlock()
+		config, configErr = cfg, err
 	})
+	configCacheMutex.RLock()
+	defer configCacheMutex.RUnlock()
 	return config, configErr
+}
+
+// ReloadConfig 刷新认证缓存，确保页面保存后的设备和密钥立即生效。
+func ReloadConfig(path string) (*Config, error) {
+	cfg, err := LoadConfig(path)
+	if err != nil {
+		return nil, err
+	}
+	configCacheMutex.Lock()
+	defer configCacheMutex.Unlock()
+	config, configErr = cfg, nil
+	return cfg, nil
 }
 
 // GetSecretByMAC 根据 MAC 地址获取对应的 secret
 func GetSecretByMAC(mac string) (string, error) {
 	mac = normalizeMAC(mac)
+	configCacheMutex.RLock()
+	defer configCacheMutex.RUnlock()
 
 	if config == nil {
 		return "", ErrConfigNotLoaded

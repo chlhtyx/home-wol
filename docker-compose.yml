@@ -3,14 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: registry.cn-hangzhou.aliyuncs.com/chldemo/home-wol:v1.1
+    image: registry.cn-hangzhou.aliyuncs.com/chldemo/home-wol:v1.2
     container_name: home-wol
     restart: unless-stopped
-    # 默认使用 bridge 网络并映射端口，兼容 Windows Docker Desktop。
-    ports:
-      - "${PORT:-1323}:1323"
-    # Linux 部署如需直接发送局域网广播，可删除上面的 ports 并启用：
-    # network_mode: host
+    # Linux 软路由使用宿主机网络发送局域网 WOL 广播。
+    # 应用直接监听宿主机 1323 端口，host 模式无需 ports 映射。
+    network_mode: host
     volumes:
       # Web 管理界面需要写入配置；宿主机文件必须提前存在。
       - type: bind
@@ -20,6 +18,8 @@ services:
         bind:
           create_host_path: false
     environment:
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?请在 .env 中设置管理端登录密码 ADMIN_PASSWORD}
       # 配置文件路径
       - CONFIG_PATH=${CONFIG_PATH:-/home/config.json}
       # 仅兼容旧环境变量；页面保存到 config.json 的广播地址优先。
@@ -28,7 +28,7 @@ services:
       - TZ=${TZ:-Asia/Shanghai}
     # 健康检查
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "-O", "/dev/null", "http://127.0.0.1:1323/api/devices"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "-O", "/dev/null", "http://127.0.0.1:1323/healthz"]
       interval: 30s
       timeout: 10s
       retries: 3

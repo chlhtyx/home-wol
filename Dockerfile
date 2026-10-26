@@ -1,7 +1,8 @@
 # ============================================
 # 阶段 1: 编译应用
 # ============================================
-FROM registry.cn-shanghai.aliyuncs.com/xm69/go-build AS build
+# 固定编译器与发行版，避免隐式使用旧 Go 标准库。
+FROM golang:1.27.3-alpine3.24 AS build
 
 # 设置工作目录
 WORKDIR /build
@@ -9,6 +10,7 @@ WORKDIR /build
 # 设置 Go 环境变量
 ENV GOPROXY=https://goproxy.cn \
     GO111MODULE=on \
+    GOTOOLCHAIN=local \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64
@@ -33,7 +35,7 @@ RUN set -eux && \
 # ============================================
 # 阶段 2: 运行时镜像
 # ============================================
-FROM alpine:3.19
+FROM alpine:3.24.3
 
 # 安装运行时依赖
 RUN set -eux && \
@@ -69,7 +71,7 @@ EXPOSE 1323
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:1323/ || exit 1
+    CMD wget --quiet --tries=1 -O /dev/null http://localhost:1323/healthz || exit 1
 
 # 启动应用
 ENTRYPOINT ["./main"]

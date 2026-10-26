@@ -7,6 +7,8 @@
 - Docker
 - Docker Compose
 
+默认 Compose 使用 host 网络，面向 Linux 软路由。Windows Docker Desktop 本地开发需先删除 `network_mode: host` 并添加 `ports: ["1323:1323"]`；实际 WOL 广播需单独验证。
+
 ## 快速开始
 
 ### Windows 用户
@@ -64,10 +66,13 @@ make logs
 **.env** - 环境变量：
 
 ```env
+# 管理端账号，密码必须填写，没有默认密码。
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=请替换为你的强密码
+
 # 广播地址请在启动后的 Web 管理页面“网络设置”中配置。
 
-# 服务端口
-PORT=1323
+# 默认 host 模式固定监听宿主机 1323 端口，无需设置 PORT。
 
 # 时区
 TZ=Asia/Shanghai
@@ -75,7 +80,7 @@ TZ=Asia/Shanghai
 
 ### 2. 配置广播地址
 
-启动后访问 <http://localhost:1323/admin/>，在“网络设置”中输入目标子网的 IPv4 广播地址并保存，下一次唤醒立即生效。配置写入 `config.json`，重启后保留。旧版 `BROADCAST_ADDRESS` 环境变量仅在文件未配置广播地址时生效。
+启动后访问 <http://localhost:1323/admin/>，先用 `.env` 中配置的账号密码登录，再在“网络设置”中输入目标子网的 IPv4 广播地址并保存，下一次唤醒立即生效。配置写入 `config.json`，重启后保留。旧版 `BROADCAST_ADDRESS` 环境变量仅在文件未配置广播地址时生效。
 
 广播地址由 IP 和子网掩码共同决定；下面 `192.168.1.255` 的示例假定子网为 `192.168.1.0/24`。
 
@@ -143,11 +148,13 @@ make rebuild       # 重新构建并启动
 
 ## 测试服务
 
-### 1. 生成验证码
+### 1. 健康检查与验证码
 
 ```bash
-curl "http://localhost:1323/generate_code?mac=YOUR_MAC"
+curl --fail "http://localhost:1323/healthz"
 ```
+
+浏览器登录管理端后，在设备二维码中查看动态验证码。旧的 `/generate_code` 接口也要求登录 Cookie，未登录返回 401；程序化登录方法见 [Web 管理说明](WEB_MANUAL.md#api-接口)。
 
 ### 2. 唤醒设备
 
@@ -207,23 +214,23 @@ cat config.json | jq .
 ### 2. 无法唤醒设备
 
 **检查广播地址：**
-```bash
-# 查看容器环境变量
-docker exec home-wol env | grep BROADCAST
-```
 
-**尝试使用 host 网络模式：**
+在 Web 管理页面的“网络设置”中确认广播地址为目标设备所在子网的广播地址。页面保存的设置优先于旧版 `BROADCAST_ADDRESS` 环境变量。
 
-编辑 `docker-compose.yml`，取消注释：
+**确认使用 host 网络模式：**
+
+当前 `docker-compose.yml` 和 `docker-compose.router.yml` 均已启用以下设置，且不配置 `ports`：
 ```yaml
 network_mode: "host"
 ```
 
-重启：
+修改网络模式后必须重新创建容器，单纯 restart 不会应用网络变更。在原部署目录执行（使用软路由专用文件时添加 `-f docker-compose.router.yml`）：
 ```bash
-docker-compose down
-docker-compose up -d
+docker compose up -d --no-build --force-recreate home-wol
+docker inspect home-wol --format '{{.HostConfig.NetworkMode}}'
 ```
+
+输出应为 `host`。管理地址为 `http://软路由的局域网IP:1323/admin/`。
 
 ### 3. 配置文件修改不生效
 
@@ -238,27 +245,20 @@ docker-compose up -d
 
 ### 4. 端口冲突
 
-修改 `.env` 文件中的 `PORT`：
-```env
-PORT=8080
-```
-
-重启服务。
+默认 host 模式直接使用宿主机 `1323` 端口，修改 `.env` 的 `PORT` 不生效。请先停止或调整占用该端口的其他服务，再重新创建容器。
 
 ## 网络模式
 
-### Bridge 模式（默认）
+### Bridge 模式（本地开发可选）
 
-适用于大多数场景，但可能无法发送广播包。
+删除 `network_mode: host` 后可使用以下端口映射；bridge 模式可能影响局域网广播，不推荐用于软路由 WOL 部署。
 
 ```yaml
 ports:
   - "1323:1323"
-networks:
-  - wol-network
 ```
 
-### Host 模式（推荐 WOL）
+### Host 模式（默认，推荐 Linux 软路由 WOL）
 
 容器使用宿主机网络，可直接发送广播包。
 

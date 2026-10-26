@@ -94,7 +94,7 @@ echo ""
 # 测试服务
 echo "🔍 测试服务..."
 if command -v curl &> /dev/null; then
-    if curl -s http://localhost:1323 > /dev/null; then
+    if curl -fsS http://localhost:1323/healthz > /dev/null; then
         echo -e "${GREEN}✅ 服务可访问${NC}"
     else
         echo -e "${YELLOW}⚠️  服务不可访问${NC}"

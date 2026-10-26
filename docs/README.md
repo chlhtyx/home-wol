@@ -4,6 +4,7 @@
 
 ## 使用与部署
 
+- [软路由登录仓库与拉取部署](ROUTER_DEPLOY.md)
 - [Docker 快速部署](README_DOCKER.md)
 - [Docker 详细部署参考](DOCKER_DEPLOY.md)
 - [本地运行与接口参考](QUICK_START.md)

@@ -5,6 +5,39 @@ const API_BASE = '/api';
 let devices = [];
 let currentEditingMac = null;
 
+// Centralize authentication expiry and the header required for state changes.
+async function apiFetch(url, options = {}) {
+    const headers = new Headers(options.headers);
+    headers.set('X-Requested-With', 'XMLHttpRequest');
+    const response = await fetch(url, { ...options, headers, credentials: 'same-origin', cache: 'no-store' });
+    if (response.status === 401) {
+        devices = [];
+        window.location.replace('/login');
+        throw new Error('登录已过期，请重新登录');
+    }
+    return response;
+}
+
+async function logout() {
+    const button = document.getElementById('logoutButton');
+    if (button.disabled) return;
+    button.disabled = true;
+    try {
+        const response = await apiFetch('/api/logout', { method: 'POST' });
+        if (!response.ok) throw new Error('退出失败，请重试');
+        devices = [];
+        window.location.replace('/login');
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        button.disabled = false;
+    }
+}
+
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) window.location.reload();
+});
+
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
@@ -24,7 +57,7 @@ async function loadSettings() {
     status.className = 'settings-status';
 
     try {
-        const response = await fetch(`${API_BASE}/settings`, { cache: 'no-store' });
+        const response = await apiFetch(`${API_BASE}/settings`, { cache: 'no-store' });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || '加载网络设置失败');
         input.value = data.broadcast_address;
@@ -57,7 +90,7 @@ async function saveSettings(event) {
     button.disabled = true;
     button.textContent = '保存中…';
     try {
-        const response = await fetch(`${API_BASE}/settings`, {
+        const response = await apiFetch(`${API_BASE}/settings`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ broadcast_address: address })
@@ -85,7 +118,7 @@ async function loadDevices() {
     deviceList.innerHTML = '<div class="loading">加载中...</div>';
 
     try {
-        const response = await fetch(`${API_BASE}/devices`);
+        const response = await apiFetch(`${API_BASE}/devices`);
         if (!response.ok) {
             throw new Error('加载设备列表失败');
         }
@@ -169,16 +202,17 @@ async function testWol(mac) {
 
     // 生成动态验证码
     try {
-        const codeResponse = await fetch(`${API_BASE}/devices/${mac}/code`);
+        const codeResponse = await apiFetch(`${API_BASE}/devices/${mac}/code`);
         if (!codeResponse.ok) {
-            throw new Error('获取验证码失败');
+            const error = await codeResponse.json().catch(() => ({}));
+            throw new Error(error.error || `获取验证码失败（HTTP ${codeResponse.status}）`);
         }
 
         const codeData = await codeResponse.json();
         const authCode = codeData.code;
 
         // 发送唤醒指令
-        const wolResponse = await fetch(`/wol?mac=${mac}&auth_code=${authCode}`);
+        const wolResponse = await apiFetch(`/wol?mac=${mac}&auth_code=${authCode}`);
         if (!wolResponse.ok) {
             const errorText = await wolResponse.text();
             throw new Error(errorText || '唤醒失败');
@@ -202,7 +236,7 @@ async function showQrcode(mac, name, secret) {
     info.innerHTML = '';
 
     try {
-        const response = await fetch(`${API_BASE}/devices/${mac}/qrcode`);
+        const response = await apiFetch(`${API_BASE}/devices/${mac}/qrcode`);
         if (!response.ok) {
             throw new Error('生成二维码失败');
         }
@@ -354,7 +388,7 @@ async function handleSubmit(event) {
                 }
             }
 
-            const response = await fetch(`${API_BASE}/devices/${currentEditingMac}`, {
+            const response = await apiFetch(`${API_BASE}/devices/${currentEditingMac}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -370,7 +404,7 @@ async function handleSubmit(event) {
             showToast('设备更新成功', 'success');
         } else {
             // 添加设备
-            const response = await fetch(`${API_BASE}/devices`, {
+            const response = await apiFetch(`${API_BASE}/devices`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -405,7 +439,7 @@ async function deleteDevice(mac, name) {
     }
 
     try {
-        const response = await fetch(`${API_BASE}/devices/${mac}`, {
+        const response = await apiFetch(`${API_BASE}/devices/${mac}`, {
             method: 'DELETE'
         });
 

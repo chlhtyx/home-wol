@@ -1,0 +1,33 @@
+services:
+  home-wol:
+    # 软路由只拉取已发布镜像，不需要 Go、Dockerfile 或源码。
+    image: registry.cn-hangzhou.aliyuncs.com/chldemo/home-wol:v1.2
+    platform: linux/amd64
+    pull_policy: always
+    container_name: home-wol
+    restart: unless-stopped
+    # Linux 软路由直接使用宿主机网络发送 WOL 广播，Web 端口固定为 1323。
+    network_mode: host
+    volumes:
+      - type: bind
+        source: ./config.json
+        target: /home/config.json
+        read_only: false
+        bind:
+          create_host_path: false
+    environment:
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?请在 .env 中设置管理端登录密码 ADMIN_PASSWORD}
+      CONFIG_PATH: /home/config.json
+      TZ: Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "-O", "/dev/null", "http://127.0.0.1:1323/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

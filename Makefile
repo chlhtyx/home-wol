@@ -26,10 +26,10 @@ ps: ## 查看服务状态
 	docker compose ps
 
 test: ## 测试服务
-	@echo "测试生成验证码接口..."
-	@curl -s "http://localhost:1323/generate_code?mac=E0:E1:A9:10:87:06" | jq .
+	@echo "测试服务健康检查..."
+	@curl -fsS "http://localhost:1323/healthz"
 	@echo ""
-	@echo "请手动测试唤醒接口"
+	@echo "请登录管理端后测试设备唤醒"
 
 clean: ## 清理容器和镜像
 	docker compose down
